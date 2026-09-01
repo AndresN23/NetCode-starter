@@ -24,7 +24,28 @@ public class ClientPlayerMovement : NetworkBehaviour
         {
             m_StarterAssestsInputs.enabled = true;
             m_PlayerInput.enabled = true;
+
+        }
+
+        if (IsServer)
+        {
             m_ThirdPersonController.enabled = true;
         }
+    }
+
+    [Rpc(SendTo.Server)]
+    private void UpdateInputServerRpc(Vector2 move, Vector2 look, bool jump, bool sprint)
+    {
+        m_StarterAssestsInputs.MoveInput(move);
+        m_StarterAssestsInputs.LookInput(look);
+        m_StarterAssestsInputs.JumpInput(jump);
+        m_StarterAssestsInputs.SprintInput(sprint);
+    }
+    private void LateUpdate()
+    {
+        if (!IsOwner)
+            return;
+
+        UpdateInputServerRpc(m_StarterAssestsInputs.move, m_StarterAssestsInputs.look, m_StarterAssestsInputs.jump, m_StarterAssestsInputs.sprint);
     }
 }
